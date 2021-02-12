@@ -155,9 +155,13 @@ similar_keywords_list = []
 similar_keywords = ""
 #keyword = "justice"
 #similar_keywords = getSimilarWords(keyword, nlp)
-for word_tuple in word2vec_model.similar_by_word(keyword)[:5]:
-    similar_keywords_list.append(word_tuple[0])
-    
+try:
+    for word_tuple in word2vec_model.similar_by_word(keyword)[:5]:
+        similar_keywords_list.append(word_tuple[0])
+except:
+    print("Similar not found for phrase...")
+    similar_keywords_list.append(keyword) 
+
 similar_keywords = " ".join(similar_keywords_list)
 print("Similar words are:",similar_keywords)
 
@@ -168,21 +172,20 @@ from scipy import spatial
 def search_for_keyword(keyword, doc_obj, nlp):
     phrase_matcher = PhraseMatcher(nlp.vocab)
     li = list(keyword.split(" ")) 
-    print(li)
     patterns = [nlp.make_doc(text) for text in li]
     phrase_matcher.add("TerminologyList", patterns)
 
     matched_items = phrase_matcher(doc_obj)
-    print(matched_items)
     matched_text = []
     for match_id, start, end in matched_items:
         text = nlp.vocab.strings[match_id]
         span = doc_obj[start: end]
         matched_text.append(span.sent.text)
-    
+    print("Found ", len(matched_text), " matches")
     for txt in matched_text:
-        print("Found Match ####")
+        print("Found Match ........")
         print(txt)
+        print("\n")
     
 
 pdf = readPdfFile("doc.pdf","docs")
